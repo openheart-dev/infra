@@ -1,2 +1,4 @@
 /.cassandraWorkbench
-/db
+cassandra-data
+/.cassandraWorkbench.jsonc
+/cassandra_password

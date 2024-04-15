@@ -7,9 +7,22 @@ services:
     ports:
       - "9042:9042"
     volumes:
-      - ./db:/var/lib/cassandra
+      - cassandra-data:/var/lib/cassandra
     environment:
       - CASSANDRA_AUTHENTICATOR=PasswordAuthenticator
       - CASSANDRA_USERNAME=cassandra
-      - CASSANDRA_PASSWORD=3utkZEW789dv
+      - CASSANDRA_PASSWORD=/run/secrets/cassandra_password
       - CASSANDRA_PASSWORD_SEEDER=true
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "DESCRIBE KEYSPACES"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+secrets:
+  cassandra_password:
+    file: ./cassandra_password
+
+volumes:
+  cassandra-data:
