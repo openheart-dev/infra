@@ -1,0 +1,12 @@
+FROM cassandra:4.1
+
+# Expose the default Cassandra port
+EXPOSE 9042
+
+# Copy over the scripts/cassandra folder
+COPY scripts/cassandra /scripts/cassandra
+
+# Set execute permissions on the scripts
+RUN chmod +x /scripts/cassandra/*.sh
+
+ENTRYPOINT [ "/scripts/cassandra/init-script.sh" ]
