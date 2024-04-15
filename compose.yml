@@ -2,27 +2,31 @@ version: '3.7'
 
 services:
   db:
-    image: cassandra:4.1
     container_name: cassandra_db
     ports:
       - "9042:9042"
     volumes:
       - cassandra-data:/var/lib/cassandra
+      - ./scripts/cassandra:/docker-entrypoint-initdb.d
     environment:
       - CASSANDRA_AUTHENTICATOR=PasswordAuthenticator
       - CASSANDRA_USERNAME=cassandra
       - CASSANDRA_PASSWORD=/run/secrets/cassandra_password
       - CASSANDRA_PASSWORD_SEEDER=true
     healthcheck:
-      test: ["CMD", "cqlsh", "-e", "DESCRIBE KEYSPACES"]
+      test: ["CMD", "cqlsh", "-e", "DESCRIBE KEYSPACES", "-u", "cassandra", "-p", "/run/secrets/cassandra_password"]
       interval: 1m30s
       timeout: 30s
       retries: 5
       start_period: 30s
+    build: 
+      context: .
+      dockerfile: Dockerfile.cassandra
+    
 
 secrets:
   cassandra_password:
-    file: ./cassandra_password
+    file: ./scripts/cassandra/cassandra_password
 
 volumes:
   cassandra-data:
